@@ -3,6 +3,8 @@ import json
 import os
 from datetime import datetime
 
+st.set_page_config(page_title="Bầu cử", layout="centered")
+
 CANDIDATE_FILE = "candidates.json"
 VOTE_FILE = "votes.json"
 USER_FILE = "voted_users.json"
@@ -51,7 +53,6 @@ def record_vote(user_id, selection):
     save_json(users, USER_FILE)
 
 def main():
-    st.set_page_config(page_title="Bầu cử", layout="centered")
     st.title("🗳️ Bầu chọn ứng viên")
     init_files()
 
