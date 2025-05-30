@@ -3,8 +3,10 @@ import json
 import os
 from datetime import datetime
 
+# ⚠️ set_page_config phải nằm ở đầu tiên
 st.set_page_config(page_title="Bầu cử", layout="centered")
 
+# ----------------------- Khai báo file ----------------------- #
 CANDIDATE_FILE = "candidates.json"
 VOTE_FILE = "votes.json"
 USER_FILE = "voted_users.json"
@@ -12,6 +14,7 @@ ALLOWED_USERS_FILE = "allowed_users.json"
 MIN_CHOICE = 1
 MAX_CHOICE = 3
 
+# ----------------------- Hàm tiện ích ----------------------- #
 def load_json(file):
     with open(file, encoding="utf-8") as f:
         return json.load(f)
@@ -28,14 +31,18 @@ def init_files():
             {"id": 3, "name": "Pham Van C", "birth_year": 1990, "position": "Nhan vien"},
             {"id": 4, "name": "Le Thi D", "birth_year": 1982, "position": "Nhan vien"}
         ], CANDIDATE_FILE)
+
     if not os.path.exists(VOTE_FILE):
         votes = [{"id": c["id"], "name": c["name"], "votes": 0} for c in load_json(CANDIDATE_FILE)]
         save_json(votes, VOTE_FILE)
+
     if not os.path.exists(USER_FILE):
         save_json({}, USER_FILE)
+
     if not os.path.exists(ALLOWED_USERS_FILE):
         save_json(["user01", "user02", "user03"], ALLOWED_USERS_FILE)
 
+# ----------------------- Ghi phiếu bầu ----------------------- #
 def record_vote(user_id, selection):
     votes = load_json(VOTE_FILE)
     for sel in selection:
@@ -52,12 +59,13 @@ def record_vote(user_id, selection):
     }
     save_json(users, USER_FILE)
 
+# ----------------------- Giao diện người dùng ----------------------- #
 def main():
-    st.title("🗳️ Bầu chọn ứng viên")
+    st.title("\U0001F5F3️ Bầu chọn ứng viên")
     init_files()
 
     allowed_users = load_json(ALLOWED_USERS_FILE)
-    user_id = st.text_input("🔐 Nhập mã bầu cử:")
+    user_id = st.text_input("\U0001F510 Nhập mã bầu cử:", key="user_id_input")
 
     if user_id:
         if user_id not in allowed_users:
@@ -73,31 +81,26 @@ def main():
             for c in candidates:
                 st.markdown(f"- **{c['name']}** ({c['position']}, {c['birth_year']})")
 
-            selection = st.multiselect("✅ Chọn ứng viên:", [c["name"] for c in candidates])
-            if st.button("📝 Xác nhận"):
+            selection = st.multiselect("✅ Chọn ứng viên:", [c["name"] for c in candidates], key="candidate_select")
+            if st.button("📝 Xác nhận", key="confirm_vote"):
                 if len(selection) < MIN_CHOICE:
                     st.error("Chọn quá ít.")
                 elif len(selection) > MAX_CHOICE:
                     st.error("Chọn quá nhiều.")
                 else:
                     st.success(f"Đã chọn: {selection}")
-                    if st.button("✅ Gửi phiếu"):
+                    if st.button("✅ Gửi phiếu", key="submit_vote"):
                         record_vote(user_id, selection)
                         st.success("Phiếu bầu đã được ghi nhận.")
 
-if __name__ == "__main__":
-    main()
-
-
-
-    # ----------------------- Hướng dẫn ----------------------- #
-    with st.expander("🚀 Hướng dẫn triển khai trên GitHub & Streamlit Cloud"):
+# ----------------------- Hướng dẫn ----------------------- #
+    with st.expander("\U0001F680 Hướng dẫn triển khai trên GitHub & Streamlit Cloud"):
         st.markdown("""
-        1. Đảm bảo 3 file: `candidates.json`, `votes.json`, `voted_users.json` có trong thư mục gốc.
+        1. Đảm bảo 4 file: `candidates.json`, `votes.json`, `voted_users.json`, `allowed_users.json` có trong thư mục gốc.
         2. Push toàn bộ lên GitHub.
         3. Deploy qua [Streamlit Cloud](https://share.streamlit.io).
         4. Mỗi người chỉ được vote 1 lần, kiểm soát qua mã người dùng.
-        5. Xem thống kê bằng mật khẩu quản trị: `admin123`
+        5. Xem thống kê bằng mật khẩu quản trị.
         """)
 
 if __name__ == "__main__":
