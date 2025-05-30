@@ -1,0 +1,16 @@
+# VS Code
+.vscode/
+.history/
+*.code-workspace
+
+# Python (nếu dùng)
+__pycache__/
+*.pyc
+.env
+
+# Node.js (nếu có)
+node_modules/
+
+# General
+.DS_Store
+*.log
